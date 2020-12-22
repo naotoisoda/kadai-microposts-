@@ -13,6 +13,9 @@ class UserController extends Controller
     }
     public function show($id){
         $user=User::findOrfail($id);
-        return view('users.show',['user'=>$user]);
+        $user->loadRelationshipCounts();
+        $microposts=$user->microposts()->orderBy('created_at','desc')->paginate(10);
+        
+        return view('users.show',['user'=>$user,'microposts'=>$microposts,]);
     }
 }
