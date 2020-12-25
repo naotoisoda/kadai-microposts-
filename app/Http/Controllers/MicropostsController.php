@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Micropost;
 
 class MicropostsController extends Controller
 {
@@ -10,15 +11,17 @@ class MicropostsController extends Controller
     {
         $data=[];
         if(\Auth::check()){
-            $user=\Auth::user();
-            $microposts=$user->microposts()->orderBy('created_at','desc')->paginate(10);
+            $user = \Auth::user();
+            $microposts = $user->microposts()->orderBy('created_at','desc')->paginate(10);
+            $data = [
+                    'user'=>$user,
+                    'microposts'=>$microposts,
+                ];
         }
-        $data=[
-            'user'=>$user,
-            'microposts'=>$microposts,
-            ];
+
         return view('welcome',$data);
     }
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -31,18 +34,11 @@ class MicropostsController extends Controller
     }
     public function destroy($id)
     {
-        $micropost=\App\Micropost::findOrfail($id);
+        $micropost = Micropost::findOrfail($id);
         if(\Auth::id()===$micropost->user_id){
             $micropost->delete();
         }
         return back();
     }
-    public function show($id)
-    {
-        $user=User::findOrfail($id);
-        $user->loadRelationshipCounts();
-        $microposts=$user->microposts()->orderBy('created_at','desc')->paginate(10);
-        
-        return view('users.show',['user'=>$user,'microposts'=>$microposts,]);
-    }
+
 }
