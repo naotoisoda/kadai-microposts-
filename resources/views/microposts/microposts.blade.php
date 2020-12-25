@@ -11,12 +11,21 @@
                     <div>
                         <p class="mb-0">{!! nl2br(e($micropost->content)) !!}</p>
                     </div>
-                    <div>
-                        @if(Auth::id()==$micropost->user_id)
-                            {!! Form::open(['route'=>['microposts.destroy',$micropost->id],'method'=>'delete']) !!}
-                                {!! Form::submit('Delete',['class'=>'btn btn-danger btn-sm']) !!}
-                            {!! Form::close() !!}
-                        @endif
+                    <div class="col-sm-2">
+                            @if(!\Auth::user()->is_favorited($micropost->id))
+                                {!! Form::open(['route'=>['micropost.favorite',$micropost->id],'method' => 'post']) !!}
+                                    {!! Form::submit('Favorite',['class' => 'btn btn-success btn-sm btn-block']) !!}
+                                {!! Form::close() !!}
+                            @else
+                                {!! Form::open(['route'=>['micropost.unfavorite',$micropost->id],'method' => 'delete']) !!}
+                                    {!! Form::submit('Unfavorite',['class' => 'btn btn-warning btn-sm btn-block']) !!}
+                                {!! Form::close() !!}
+                            @endif
+                            @if(Auth::id()==$micropost->user_id)
+                                {!! Form::open(['route'=>['microposts.destroy',$micropost->id],'method'=>'delete']) !!}
+                                    {!! Form::submit('Delete',['class'=>'btn btn-danger btn-sm btn-block']) !!}
+                                {!! Form::close() !!}
+                            @endif
                     </div>
                 </div>
             </li>

@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+
 class User extends Authenticatable
 {
     use Notifiable;
@@ -93,8 +94,54 @@ class User extends Authenticatable
         return Micropost::whereIn('user_id',$userIds);
     }
     
+    //*******お気に入り管理**************************************************
+    //お気に入りしている投稿を取得（ユーザー→投稿）
+    public function favorite_posts()
+    {
+        return $this->belongsToMany(Micropost::class,'favorites','user_id','micropost_id')->withTimestamps();
+    }
+
+    //投稿をお気に入り
+    public function favorite($micropostId)
+    {
+        $exist = $this->is_favorited($micropostId);
+        
+        if($exist){
+            //既にお気に入りしていたらなにもしない
+            return false;
+        }else{
+            //お気に入りする
+            $this->favorite_posts()->attach($micropostId);
+            return true;
+        }
+    }
+    
+    //投稿をお気に入り解除
+    public function unfavorite($micropostId)
+    {
+        $exist = $this->is_favorited($micropostId);        
+        
+        if(!$exist){
+            //お気に入りしていなかったらなにもしない
+            return false;
+        }else{
+            //お気に入り解除する
+            $this->favorite_posts()->detach($micropostId);
+            return true;
+        }        
+    }
+    
+    //既にお気に入り済みかを確認
+    public function is_favorited($micropostId)
+    {
+        return $this->favorite_posts()->where('micropost_id',$micropostId)->exists();
+    }
+    //********************************************************************
+    
+    //count
     public function loadRelationshipCounts()
     {
-        $this->loadCount('microposts','followings','followers');
+        $this->loadCount('microposts','followings','followers','favorite_posts');
     }
+    
 }
