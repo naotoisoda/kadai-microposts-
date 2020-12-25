@@ -17,10 +17,7 @@
                 @include('microposts.forms')
                 @include('microposts.microposts')
             </div>
-            
         </div>
-        
-        
         
     @else
     <div class="center jumbotron">

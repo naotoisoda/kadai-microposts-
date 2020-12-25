@@ -7,37 +7,46 @@ use App\User;
 
 class UserController extends Controller
 {
-    public function index(){
-        $users=User::orderBy('id','desc')->paginate(10);
+    public function index()
+    {
+        $users = User::orderBy('id','desc')->paginate(10);
+        
         return view('users.index',['users'=>$users]);
     }
-    public function show($id){
-        $user=User::findOrfail($id);
+    
+    public function show($id)
+    {
+        $user = User::findOrfail($id);
         $user->loadRelationshipCounts();
+        
         $microposts=$user->microposts()->orderBy('created_at','desc')->paginate(10);
         
         return view('users.show',['user'=>$user,'microposts'=>$microposts,]);
     }
-        public function followings($id)
+    
+    public function followings($id)
     {
-        $user=User::findOrfail($id);
+        $user = User::findOrfail($id);
         $user->loadRelationshipCounts();
-        $followings=$user->followings()->paginate(10);
+        
+        $followings = $user->followings()->paginate(10);
         
         return view('users.followings',[
-            'user'=>$user,
-            'users'=>$followings,
+            'user'  => $user,
+            'users' => $followings,
         ]);
     }
+    
     public function followers($id)
     {
-        $user=User::findOrfail($id);
+        $user = User::findOrfail($id);
         $user->loadRelationshipCounts();
-        $followers=$user->followers()->paginate(10);
+        
+        $followers = $user->followers()->paginate(10);
         
         return view('users.followers',[
-            'user'=>$user,
-            'users'=>$followers,
-            ]);
+            'user'  => $user,
+            'users' => $followers,
+        ]);
     }
 }
